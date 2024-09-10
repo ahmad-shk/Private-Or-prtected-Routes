@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../Auth';
+import { Authentication } from '../Auth';
 
 function DashBoard() {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const { User } = auth(); // Get the authenticated user
-    if (User) {
-      setUser(User); // Set the user data
-    } else {
-      navigate('/login'); // Redirect if no user is found
-    }
-  }, [navigate]);
+  const user = localStorage.getItem('User');
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+    Authentication("", "")
+    navigate('/login')
   };
+
 
   return (
     <div>

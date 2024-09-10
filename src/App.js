@@ -1,39 +1,46 @@
-import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Login from './pages/Login';
 import DashBoard from './pages/DashBoard';
-import { useEffect, useState } from 'react';
 import Product from './pages/Product';
+import { useEffect, useState } from 'react';
+import { Auth } from './Auth';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, token } = Auth();
+  const location = useLocation(); // Use useLocation within the Router
+
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const user = localStorage.getItem('User')
     if (token && user) {
-      setIsAuthenticated(true)
+      setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
-  }, [])
+    console.log('Route changed:', location.pathname); // Log route changes
+  }, [location, token, user]); // Track location and auth changes
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route element={!isAuthenticated ? <Outlet /> : <Navigate to="/dashboard" />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-        </Route>
+    <Routes>
+      {/* Public Routes */}
+      <Route element={!isAuthenticated ? <Outlet /> : <Navigate to="/dashboard" />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+      </Route>
 
-        {/* Protected Routes */}
-        <Route element={isAuthenticated ? <Outlet /> : <Navigate to="/login" />}>
-          <Route path="/dashboard" element={<DashBoard />} />
-          <Route path="/product" element={<Product />} />
-        </Route>
-      </Routes>
-    </Router>
+      {/* Protected Routes */}
+      <Route element={isAuthenticated ? <Outlet /> : <Navigate to="/login" />}>
+        <Route path="/dashboard" element={<DashBoard />} />
+        <Route path="/product" element={<Product />} />
+      </Route>
+    </Routes>
   );
 }
 
-export default App;
+export default function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}

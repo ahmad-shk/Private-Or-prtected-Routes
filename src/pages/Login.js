@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Authentication } from '../Auth';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -7,13 +8,12 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-
   const handleLogin = async (event) => {
     event.preventDefault();
+    
     if (email === 'asd' && password === '123') {
-      localStorage.setItem('User', "seeker");
-      localStorage.setItem('token', '123');
-      navigate('/dashboard')
+      Authentication(email, password); // Store token on successful login
+      navigate('/dashboard'); // Redirect to dashboard
     } else {
       setError('Invalid email or password');
     }
